@@ -1,12 +1,12 @@
 import { useQueryClient } from '@tanstack/react-query'
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
-import { clearAuthToken, readStoredToken } from '../../hooks/useAuthToken'
+import { clearAuthToken, useAuthToken } from '../../hooks/useAuthToken'
 
 export function AppShell() {
   const { pathname } = useLocation()
   const navigate = useNavigate()
   const queryClient = useQueryClient()
-  const token = readStoredToken()
+  const token = useAuthToken()
   const hasToken = token !== null
   const isGuestHome = pathname === '/' && !hasToken
   const isAuthPage = pathname === '/login' || pathname === '/register'

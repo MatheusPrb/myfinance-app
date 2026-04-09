@@ -1,11 +1,11 @@
 import { Link } from 'react-router-dom'
-import { readStoredToken } from '../hooks/useAuthToken'
+import { useAuthToken } from '../hooks/useAuthToken'
 import { useSpendingSummaryQuery } from '../hooks/api'
 import { formatBRL } from '../utils/format'
 import { parseApiError } from '../utils/apiError'
 
 export function HomePage() {
-  const token = readStoredToken()
+  const token = useAuthToken()
   const hasToken = token !== null
 
   const summaryQuery = useSpendingSummaryQuery(hasToken)
