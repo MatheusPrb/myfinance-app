@@ -1,3 +1,5 @@
+# O volume frontend_node_modules guarda node_modules no Docker.
+# Ao mudar package.json, o entrypoint roda `npm install` em cada subida; ou: docker compose exec frontend npm install
 services:
   frontend:
     build: .

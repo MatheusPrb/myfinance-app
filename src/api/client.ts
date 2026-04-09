@@ -1,4 +1,8 @@
+/**
+ * Cliente HTTP único (axios) para o app. Serviços em `src/services/*` importam `api` daqui.
+ */
 import axios from 'axios'
+import { readStoredToken } from '../hooks/useAuthToken'
 
 function apiBaseURL(): string {
   if (import.meta.env.DEV) {
@@ -14,4 +18,12 @@ export const api = axios.create({
     Accept: 'application/json',
     'Content-Type': 'application/json',
   },
+})
+
+api.interceptors.request.use((config) => {
+  const token = readStoredToken()
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`
+  }
+  return config
 })

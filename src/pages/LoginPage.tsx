@@ -1,15 +1,20 @@
 import { useState } from 'react'
 import type { FormEvent } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { FormField } from '../components/FormField'
 import { storeAuthToken } from '../hooks/useAuthToken'
-import { loginRequest } from '../services/authService'
+import { useLoginMutation } from '../hooks/api'
+import { queryKeys } from '../query/queryKeys'
 import { parseApiError } from '../utils/apiError'
 import { validateLoginForm } from '../utils/validation'
 
 export function LoginPage() {
   const navigate = useNavigate()
   const location = useLocation()
+  const queryClient = useQueryClient()
+  const loginMutation = useLoginMutation()
+
   const justRegistered = Boolean(
     location.state && typeof location.state === 'object' && 'registered' in location.state,
   )
@@ -17,7 +22,8 @@ export function LoginPage() {
   const [password, setPassword] = useState('')
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
   const [formError, setFormError] = useState('')
-  const [loading, setLoading] = useState(false)
+
+  const loading = loginMutation.isPending
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()
@@ -28,17 +34,20 @@ export function LoginPage() {
       return
     }
     setFieldErrors({})
-    setLoading(true)
     try {
-      const token = await loginRequest(email.trim(), password)
+      const token = await loginMutation.mutateAsync({
+        email: email.trim(),
+        password,
+      })
       storeAuthToken(token)
-      navigate('/')
+      await queryClient.invalidateQueries({ queryKey: queryKeys.all })
+      const from = (location.state as { from?: string } | null)?.from
+      const target = from && from.startsWith('/') && !from.startsWith('//') ? from : '/'
+      navigate(target, { replace: true })
     } catch (err) {
       const { message, fieldErrors: serverFields } = parseApiError(err)
       setFormError(message)
       setFieldErrors(serverFields)
-    } finally {
-      setLoading(false)
     }
   }
 

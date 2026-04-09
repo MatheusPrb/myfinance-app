@@ -2,18 +2,21 @@ import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { FormField } from '../components/FormField'
-import { registerRequest } from '../services/authService'
+import { useRegisterMutation } from '../hooks/api'
 import { parseApiError } from '../utils/apiError'
 import { validateRegisterForm } from '../utils/validation'
 
 export function RegisterPage() {
   const navigate = useNavigate()
+  const registerMutation = useRegisterMutation()
+
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
   const [formError, setFormError] = useState('')
-  const [loading, setLoading] = useState(false)
+
+  const loading = registerMutation.isPending
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()
@@ -24,16 +27,17 @@ export function RegisterPage() {
       return
     }
     setFieldErrors({})
-    setLoading(true)
     try {
-      await registerRequest(name.trim(), email.trim(), password)
+      await registerMutation.mutateAsync({
+        name: name.trim(),
+        email: email.trim(),
+        password,
+      })
       navigate('/login', { state: { registered: true } })
     } catch (err) {
       const { message, fieldErrors: serverFields } = parseApiError(err)
       setFormError(message)
       setFieldErrors(serverFields)
-    } finally {
-      setLoading(false)
     }
   }
 
