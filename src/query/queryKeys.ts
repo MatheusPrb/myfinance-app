@@ -5,6 +5,10 @@
 export const queryKeys = {
   all: ['mf'] as const,
 
+  user: {
+    me: () => [...queryKeys.all, 'user', 'me'] as const,
+  },
+
   categories: () => [...queryKeys.all, 'categories'] as const,
 
   subcategories: (categoryId: string) => [...queryKeys.all, 'subcategories', { categoryId }] as const,

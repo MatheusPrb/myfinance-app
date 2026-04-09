@@ -13,3 +13,8 @@ export async function registerRequest(
 ): Promise<void> {
   await api.post<ApiSuccess<null>>('/register', { name, email, password })
 }
+
+/** Revoga o token atual no servidor (Sanctum). */
+export async function logoutRequest(): Promise<void> {
+  await api.post<ApiSuccess<null>>('/logout')
+}

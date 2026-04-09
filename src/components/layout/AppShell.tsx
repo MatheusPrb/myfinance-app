@@ -1,19 +1,24 @@
-import { useQueryClient } from '@tanstack/react-query'
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
-import { clearAuthToken, useAuthToken } from '../../hooks/useAuthToken'
+import { useAuthToken } from '../../hooks/useAuthToken'
+import { useCurrentUserQuery, useLogoutMutation } from '../../hooks/api'
 
 export function AppShell() {
   const { pathname } = useLocation()
   const navigate = useNavigate()
-  const queryClient = useQueryClient()
   const token = useAuthToken()
   const hasToken = token !== null
+  const userQuery = useCurrentUserQuery(hasToken)
+  const logoutMutation = useLogoutMutation()
+  const isAdmin = userQuery.data?.is_admin === true
   const isGuestHome = pathname === '/' && !hasToken
   const isAuthPage = pathname === '/login' || pathname === '/register'
 
-  function handleLogout() {
-    clearAuthToken()
-    queryClient.clear()
+  async function handleLogout() {
+    try {
+      await logoutMutation.mutateAsync()
+    } catch {
+      /* onSettled ainda limpa token e cache */
+    }
     navigate('/')
   }
 
@@ -35,6 +40,22 @@ export function AppShell() {
               <Link to="/expenses/new" data-active={pathname === '/expenses/new' ? 'true' : undefined}>
                 Novo
               </Link>
+              {isAdmin ? (
+                <>
+                  <Link
+                    to="/admin/categories"
+                    data-active={pathname.startsWith('/admin/categories') ? 'true' : undefined}
+                  >
+                    Categorias
+                  </Link>
+                  <Link
+                    to="/admin/subcategories"
+                    data-active={pathname.startsWith('/admin/subcategories') ? 'true' : undefined}
+                  >
+                    Subcategorias
+                  </Link>
+                </>
+              ) : null}
             </>
           ) : null}
           {!hasToken ? (
@@ -43,8 +64,13 @@ export function AppShell() {
               <Link to="/register">Cadastrar</Link>
             </>
           ) : (
-            <button type="button" className="nav-text-btn" onClick={handleLogout}>
-              Sair
+            <button
+              type="button"
+              className="nav-text-btn"
+              onClick={handleLogout}
+              disabled={logoutMutation.isPending}
+            >
+              {logoutMutation.isPending ? 'Saindo…' : 'Sair'}
             </button>
           )}
         </nav>
