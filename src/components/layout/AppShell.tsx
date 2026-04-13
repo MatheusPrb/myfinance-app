@@ -113,6 +113,13 @@ export function AppShell() {
               >
                 Subcategorias
               </Link>
+              <Link
+                to="/admin/logs"
+                data-active={pathname.startsWith('/admin/logs') ? 'true' : undefined}
+                onClick={closeAdminMenu}
+              >
+                Logs
+              </Link>
             </>
           ) : null}
         </>

@@ -13,6 +13,10 @@ export const queryKeys = {
 
   subcategories: (categoryId: string) => [...queryKeys.all, 'subcategories', { categoryId }] as const,
 
+  admin: {
+    logs: (page: number, perPage: number) => [...queryKeys.all, 'admin', 'logs', { page, perPage }] as const,
+  },
+
   expenses: {
     root: () => [...queryKeys.all, 'expenses'] as const,
     summary: () => [...queryKeys.expenses.root(), 'summary'] as const,

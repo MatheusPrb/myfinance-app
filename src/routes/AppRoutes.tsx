@@ -3,6 +3,7 @@ import { GuestOnly, RequireAuth } from '../components/auth/RouteGuards'
 import { RequireAdmin } from '../components/auth/RequireAdmin'
 import { AppShell } from '../components/layout/AppShell'
 import { AdminCategoriesPage } from '../pages/AdminCategoriesPage'
+import { AdminLogsPage } from '../pages/AdminLogsPage'
 import { AdminSubcategoriesPage } from '../pages/AdminSubcategoriesPage'
 import { ExpenseDetailPage } from '../pages/ExpenseDetailPage'
 import { ExpensesPage } from '../pages/ExpensesPage'
@@ -32,6 +33,7 @@ export function AppRoutes() {
             <Route element={<RequireAdmin />}>
               <Route path="admin/categories" element={<AdminCategoriesPage />} />
               <Route path="admin/subcategories" element={<AdminSubcategoriesPage />} />
+              <Route path="admin/logs" element={<AdminLogsPage />} />
             </Route>
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />
