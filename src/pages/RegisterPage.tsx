@@ -1,14 +1,19 @@
 import { useState } from 'react'
 import type { FormEvent } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 import { Link, useNavigate } from 'react-router-dom'
 import { FormField } from '../components/FormField'
-import { useRegisterMutation } from '../hooks/api'
+import { storeAuthToken } from '../hooks/useAuthToken'
+import { useLoginMutation, useRegisterMutation } from '../hooks/api'
+import { queryKeys } from '../query/queryKeys'
 import { parseApiError } from '../utils/apiError'
 import { validateRegisterForm } from '../utils/validation'
 
 export function RegisterPage() {
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
   const registerMutation = useRegisterMutation()
+  const loginMutation = useLoginMutation()
 
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
@@ -16,12 +21,13 @@ export function RegisterPage() {
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
   const [formError, setFormError] = useState('')
 
-  const loading = registerMutation.isPending
+  const loading = registerMutation.isPending || loginMutation.isPending
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()
     setFormError('')
-    const clientErrors = validateRegisterForm(name, email, password)
+    const trimmedEmail = email.trim()
+    const clientErrors = validateRegisterForm(name, trimmedEmail, password)
     if (Object.keys(clientErrors).length > 0) {
       setFieldErrors(clientErrors)
       return
@@ -30,14 +36,25 @@ export function RegisterPage() {
     try {
       await registerMutation.mutateAsync({
         name: name.trim(),
-        email: email.trim(),
+        email: trimmedEmail,
         password,
       })
-      navigate('/login', { state: { registered: true } })
     } catch (err) {
       const { message, fieldErrors: serverFields } = parseApiError(err)
       setFormError(message)
       setFieldErrors(serverFields)
+      return
+    }
+    try {
+      const token = await loginMutation.mutateAsync({
+        email: trimmedEmail,
+        password,
+      })
+      storeAuthToken(token)
+      await queryClient.invalidateQueries({ queryKey: queryKeys.all })
+      navigate('/', { replace: true })
+    } catch {
+      navigate('/login', { state: { registered: true } })
     }
   }
 
@@ -84,7 +101,11 @@ export function RegisterPage() {
         />
         <p className="field-hint">Mínimo 8 caracteres, com letras e números.</p>
         <button type="submit" className="button primary stretch" disabled={loading}>
-          {loading ? 'Enviando…' : 'Cadastrar'}
+          {registerMutation.isPending
+            ? 'Cadastrando…'
+            : loginMutation.isPending
+              ? 'Entrando…'
+              : 'Cadastrar'}
         </button>
       </form>
     </section>

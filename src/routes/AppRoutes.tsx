@@ -7,9 +7,11 @@ import { AdminSubcategoriesPage } from '../pages/AdminSubcategoriesPage'
 import { ExpenseDetailPage } from '../pages/ExpenseDetailPage'
 import { ExpensesPage } from '../pages/ExpensesPage'
 import { HomePage } from '../pages/HomePage'
+import { ForgotPasswordPage } from '../pages/ForgotPasswordPage'
 import { LoginPage } from '../pages/LoginPage'
 import { NewExpensePage } from '../pages/NewExpensePage'
 import { RegisterPage } from '../pages/RegisterPage'
+import { ResetPasswordPage } from '../pages/ResetPasswordPage'
 
 export function AppRoutes() {
   return (
@@ -20,6 +22,8 @@ export function AppRoutes() {
           <Route element={<GuestOnly />}>
             <Route path="login" element={<LoginPage />} />
             <Route path="register" element={<RegisterPage />} />
+            <Route path="forgot-password" element={<ForgotPasswordPage />} />
+            <Route path="reset-password" element={<ResetPasswordPage />} />
           </Route>
           <Route element={<RequireAuth />}>
             <Route path="expenses/new" element={<NewExpensePage />} />

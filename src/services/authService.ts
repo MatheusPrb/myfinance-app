@@ -18,3 +18,16 @@ export async function registerRequest(
 export async function logoutRequest(): Promise<void> {
   await api.post<ApiSuccess<null>>('/logout')
 }
+
+export async function requestPasswordReset(email: string): Promise<string> {
+  const { data } = await api.post<ApiSuccess<{ message: string }>>('/password/forgot', { email })
+  return data.data.message
+}
+
+export async function resetPasswordWithCode(
+  email: string,
+  code: string,
+  password: string,
+): Promise<void> {
+  await api.post<ApiSuccess<null>>('/password/reset', { email, code, password })
+}

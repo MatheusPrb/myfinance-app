@@ -9,6 +9,14 @@ import { queryKeys } from '../query/queryKeys'
 import { parseApiError } from '../utils/apiError'
 import { validateLoginForm } from '../utils/validation'
 
+function emailAfterPasswordReset(state: unknown): string {
+  if (!state || typeof state !== 'object') return ''
+  const o = state as Record<string, unknown>
+  if (!('passwordReset' in o)) return ''
+  const e = o.email
+  return typeof e === 'string' ? e.trim() : ''
+}
+
 export function LoginPage() {
   const navigate = useNavigate()
   const location = useLocation()
@@ -18,7 +26,10 @@ export function LoginPage() {
   const justRegistered = Boolean(
     location.state && typeof location.state === 'object' && 'registered' in location.state,
   )
-  const [email, setEmail] = useState('')
+  const passwordJustReset = Boolean(
+    location.state && typeof location.state === 'object' && 'passwordReset' in location.state,
+  )
+  const [email, setEmail] = useState(() => emailAfterPasswordReset(location.state))
   const [password, setPassword] = useState('')
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
   const [formError, setFormError] = useState('')
@@ -53,13 +64,27 @@ export function LoginPage() {
 
   return (
     <section className="page auth-page">
-      <h1>Entrar</h1>
-      <p className="muted">
-        Ainda não tem conta? <Link to="/register">Cadastre-se</Link>
-      </p>
+      <header className="auth-head">
+        <h1>Entrar</h1>
+        <div className="auth-sub">
+          <p className="muted auth-sub-lead">Ainda não tem conta?</p>
+          <nav className="auth-sub-links" aria-label="Conta e recuperação de senha">
+            <Link to="/register">Cadastre-se</Link>
+            <span className="auth-sub-sep" aria-hidden="true">
+              ·
+            </span>
+            <Link to="/forgot-password">Esqueci a senha</Link>
+          </nav>
+        </div>
+      </header>
       {justRegistered ? (
         <p className="success-banner" role="status">
           Cadastro concluído. Entre com seu email e senha.
+        </p>
+      ) : null}
+      {passwordJustReset ? (
+        <p className="success-banner" role="status">
+          Senha alterada. Entre com sua nova senha.
         </p>
       ) : null}
       <form className="auth-form" onSubmit={handleSubmit} noValidate>

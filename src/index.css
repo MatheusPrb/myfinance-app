@@ -176,12 +176,236 @@ code {
   .app-header {
     gap: 8px 12px;
   }
+}
 
-  .app-nav {
+@media (max-width: 768px) {
+  /* Visitante e usuário comum: uma linha — logo + links (rolagem se precisar) */
+  .app-header:not(.app-header--admin-drawer) {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px 12px;
+  }
+
+  .app-header:not(.app-header--admin-drawer) .brand {
+    align-self: auto;
+    flex-shrink: 0;
+  }
+
+  .app-header:not(.app-header--admin-drawer) .app-nav {
     flex: 1;
     min-width: 0;
+    width: auto;
+    max-width: none;
     justify-content: flex-end;
+    padding-bottom: 2px;
+    gap: 2px 8px;
   }
+
+  .app-header:not(.app-header--admin-drawer) .app-nav a,
+  .app-header:not(.app-header--admin-drawer) .app-nav .nav-text-btn {
+    padding-inline: 4px;
+    font-size: 0.92rem;
+  }
+
+  /* Visitante no mobile: fundo alinhado ao body (sem vidro / costura escura) */
+  .app-header.app-header--guest-mobile {
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border-bottom-color: color-mix(in srgb, var(--border) 38%, transparent);
+  }
+
+  .app-header--admin-drawer {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding-bottom: 12px;
+  }
+
+  .app-header-admin-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .app-header--admin-drawer .brand {
+    align-self: auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .app-header-menu-btn {
+    display: inline-grid;
+    place-items: center;
+    flex-shrink: 0;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    margin: 0;
+    border: none;
+    border-radius: 10px;
+    background: transparent;
+    color: var(--text-h);
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+
+  .app-header-menu-btn:hover {
+    background: color-mix(in srgb, var(--text-h) 7%, transparent);
+  }
+
+  .app-header-menu-btn:focus-visible {
+    outline: 2px solid var(--accent-border);
+    outline-offset: 2px;
+  }
+
+  .app-header-menu-bars {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    width: 22px;
+  }
+
+  .app-header-menu-bars > span {
+    display: block;
+    height: 2px;
+    border-radius: 1px;
+    background: currentColor;
+  }
+}
+
+/* Menu admin (portal em document.body — acima de tudo; sem caixa no botão ☰) */
+@keyframes app-admin-drawer-in {
+  from {
+    transform: translateX(-16px);
+    opacity: 0.88;
+  }
+
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.app-admin-menu-portal {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+}
+
+.app-admin-menu-portal .app-nav-backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  background: rgba(0, 0, 0, 0.52);
+}
+
+.app-admin-menu-portal .app-nav.app-nav--admin-portal {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  z-index: 1;
+  width: min(300px, 88vw);
+  max-width: none;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  gap: 0;
+  padding: 0;
+  padding-top: env(safe-area-inset-top, 0px);
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  background: var(--bg);
+  border-right: 1px solid var(--border);
+  box-shadow: 12px 0 48px rgba(0, 0, 0, 0.35);
+  animation: app-admin-drawer-in 0.2s ease-out;
+}
+
+.app-admin-menu-portal .app-nav-drawer-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px 12px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+}
+
+.app-admin-menu-portal .app-nav-drawer-title {
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  text-transform: none;
+  color: var(--text-h);
+}
+
+.app-admin-menu-portal .app-nav-drawer-close {
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--accent);
+  background: none;
+  border: none;
+  padding: 8px 10px;
+  margin: -4px -6px -4px 0;
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+.app-admin-menu-portal .app-nav-drawer-close:hover {
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+}
+
+.app-admin-menu-portal .app-nav-drawer-close:focus-visible {
+  outline: 2px solid var(--accent-border);
+  outline-offset: 2px;
+}
+
+.app-admin-menu-portal .app-nav-drawer-links {
+  display: flex;
+  flex-direction: column;
+  padding: 10px 12px max(24px, env(safe-area-inset-bottom));
+  gap: 4px;
+}
+
+.app-admin-menu-portal .app-nav-drawer-links a,
+.app-admin-menu-portal .app-nav-drawer-links .nav-text-btn {
+  width: 100%;
+  justify-content: flex-start;
+  padding: 14px 14px;
+  border-radius: 12px;
+  font-size: 1.02rem;
+  min-height: 48px;
+  border: 1px solid transparent;
+}
+
+.app-admin-menu-portal .app-nav-drawer-links a:hover,
+.app-admin-menu-portal .app-nav-drawer-links .nav-text-btn:hover {
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+}
+
+.app-admin-menu-portal .app-nav-drawer-links a[data-active='true'] {
+  background: var(--accent-bg);
+  border-color: var(--accent-border);
+  color: var(--accent);
+  font-weight: 600;
 }
 
 .brand {
@@ -292,22 +516,80 @@ code {
   width: 100%;
   max-width: min(420px, 100%);
   margin: 0 auto;
-  padding: clamp(22px, 5vw, 32px) clamp(18px, 4vw, 28px);
+  padding: clamp(24px, 5vw, 36px) clamp(20px, 4vw, 28px);
   border-radius: 20px;
   background: var(--surface-glass);
   border: 1px solid var(--surface-glass-border);
   box-shadow: var(--shadow);
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
 }
 
 .auth-page .auth-form {
   text-align: left;
 }
 
+.auth-head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
 .auth-page h1 {
   font-size: clamp(1.5rem, 4vw, 2rem);
   letter-spacing: -0.03em;
-  margin: 0 0 12px;
+  margin: 0 0 14px;
+  width: 100%;
+}
+
+.auth-sub {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  max-width: 28ch;
+  margin: 0 auto 16px;
+}
+
+.auth-sub-lead {
+  margin: 0 !important;
+  line-height: 1.4;
+}
+
+.auth-sub-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 6px 10px;
+  font-size: 0.95rem;
+  line-height: 1.35;
+}
+
+.auth-sub-links a {
+  color: var(--accent);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.auth-sub-links a:hover {
+  text-decoration: underline;
+}
+
+.auth-sub-sep {
+  color: var(--text);
+  opacity: 0.45;
+  user-select: none;
+  flex-shrink: 0;
+}
+
+.auth-post-form {
+  margin-top: clamp(22px, 5vw, 28px);
+  margin-bottom: 0;
 }
 
 /* —— Landing (visitante na home) —— */
@@ -564,11 +846,19 @@ code {
   margin-top: 8px;
 }
 
+.auth-form .button.stretch {
+  margin-top: 0;
+}
+
 .auth-form {
   text-align: left;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 18px;
+}
+
+.auth-form .form-field {
+  margin-bottom: 0;
 }
 
 .form-field {
@@ -585,11 +875,26 @@ code {
 
 .form-field input {
   font: inherit;
-  padding: 10px 12px;
-  border-radius: 8px;
+  padding: 12px 14px;
+  min-height: 48px;
+  border-radius: 10px;
   border: 1px solid var(--border);
   background: var(--bg);
   color: var(--text-h);
+}
+
+.form-field input:-webkit-autofill,
+.form-field input:-webkit-autofill:hover,
+.form-field input:-webkit-autofill:focus,
+.form-field input:-webkit-autofill:active {
+  -webkit-text-fill-color: var(--text-h);
+  caret-color: var(--text-h);
+  box-shadow: 0 0 0 1000px var(--bg) inset;
+  transition: background-color 99999s ease-out;
+}
+
+.form-field input:autofill {
+  box-shadow: 0 0 0 1000px var(--bg) inset;
 }
 
 .form-field input:focus {
@@ -658,6 +963,7 @@ code {
   border: 1px solid var(--accent-border);
   color: var(--text-h);
   font-size: 0.9rem;
+  margin-top: 4px;
   margin-bottom: 16px;
 }
 
@@ -788,6 +1094,21 @@ code {
 .page-header-stack .link-back {
   display: inline-block;
   margin-bottom: 8px;
+}
+
+.admin-page-crosslink {
+  margin-top: 12px;
+  margin-bottom: 0;
+  font-size: 0.92rem;
+}
+
+.admin-page-crosslink a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.admin-page-crosslink a:hover {
+  text-decoration: underline;
 }
 
 .page-subtitle {
