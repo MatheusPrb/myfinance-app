@@ -36,17 +36,17 @@ export function AdminCategoriesPage() {
 
   return (
     <section className="page new-expense-page">
-      <header className="page-header page-header-stack">
+      <header className="page-header">
         <div>
           <Link to="/" className="link-back">
             ← Início
           </Link>
           <h1>Nova categoria</h1>
           <p className="page-subtitle muted">Apenas administradores. Nome único no sistema.</p>
+          <p className="admin-page-crosslink muted">
+            <Link to="/admin/subcategories">Ir para subcategorias</Link>
+          </p>
         </div>
-        <Link to="/admin/subcategories" className="button secondary">
-          Subcategorias
-        </Link>
       </header>
 
       {success ? (

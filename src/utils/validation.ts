@@ -42,3 +42,37 @@ export function validateRegisterForm(
 
   return errors
 }
+
+export function validateForgotPasswordForm(email: string): Record<string, string> {
+  const errors: Record<string, string> = {}
+  const emailErr = validateEmail(email)
+  if (emailErr) errors.email = emailErr
+  return errors
+}
+
+const CODE_RE = /^\d{6}$/
+
+export function validateResetPasswordForm(
+  email: string,
+  code: string,
+  password: string,
+): Record<string, string> {
+  const errors: Record<string, string> = {}
+  const emailErr = validateEmail(email)
+  if (emailErr) errors.email = emailErr
+
+  const c = code.trim()
+  if (!c) errors.code = 'O código é obrigatório'
+  else if (!CODE_RE.test(c)) errors.code = 'O código deve ter 6 dígitos'
+
+  if (!password) errors.password = 'A senha é obrigatória'
+  else {
+    if (password.length < 8) errors.password = 'A senha deve ter no mínimo 8 caracteres'
+    else if (!/[a-zA-Z]/.test(password))
+      errors.password = 'A senha deve conter pelo menos uma letra'
+    else if (!/\d/.test(password))
+      errors.password = 'A senha deve conter pelo menos um número'
+  }
+
+  return errors
+}
