@@ -1,6 +1,7 @@
 import { api } from '../api/client'
 import type { ApiSuccess } from '../api/types'
 import type { CategoryItem } from '../api/categoryTypes'
+import type { AdminLogListPayload } from '../api/logTypes'
 
 type SubcategoryCreated = {
   id: string
@@ -18,5 +19,12 @@ export async function createSubcategory(categoryId: string, name: string): Promi
     `/categories/${categoryId}/subcategories`,
     { name },
   )
+  return data.data
+}
+
+export async function fetchAdminLogs(page = 1, perPage = 25): Promise<AdminLogListPayload> {
+  const { data } = await api.get<ApiSuccess<AdminLogListPayload>>('/admin/logs', {
+    params: { page, per_page: perPage },
+  })
   return data.data
 }

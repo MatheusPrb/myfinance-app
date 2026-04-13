@@ -1019,7 +1019,8 @@ code {
 .page.home-dashboard,
 .page.expenses-page,
 .page.expense-detail-page,
-.page.new-expense-page {
+.page.new-expense-page,
+.page.logs-page {
   text-align: left;
   width: 100%;
   max-width: min(720px, 100%);
@@ -1036,18 +1037,27 @@ code {
   .page.expenses-page {
     max-width: min(880px, 100%);
   }
+
+  .page.logs-page {
+    max-width: min(960px, 100%);
+  }
 }
 
 @media (min-width: 1100px) {
   .page.expenses-page {
     max-width: min(960px, 100%);
   }
+
+  .page.logs-page {
+    max-width: min(1180px, 100%);
+  }
 }
 
 .page.home-dashboard h1,
 .page.expenses-page h1,
 .page.expense-detail-page h1,
-.page.new-expense-page h1 {
+.page.new-expense-page h1,
+.page.logs-page h1 {
   text-align: left;
   font-size: clamp(1.35rem, 3.5vw, 2rem);
   margin-top: 0;
@@ -1109,6 +1119,91 @@ code {
 
 .admin-page-crosslink a:hover {
   text-decoration: underline;
+}
+
+.logs-refresh-hint {
+  font-weight: 500;
+  color: var(--accent);
+}
+
+.logs-meta {
+  margin-bottom: 12px;
+  font-size: 0.9rem;
+}
+
+.logs-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--bg) 70%, transparent);
+  margin-bottom: 20px;
+}
+
+.logs-table {
+  width: 100%;
+  min-width: 720px;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+
+.logs-table th,
+.logs-table td {
+  padding: 10px 12px;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 80%, transparent);
+}
+
+.logs-table th {
+  font-weight: 600;
+  color: var(--text-h);
+  background: color-mix(in srgb, var(--social-bg) 80%, transparent);
+  white-space: nowrap;
+}
+
+.logs-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.logs-table tbody tr:hover td {
+  background: color-mix(in srgb, var(--accent) 6%, transparent);
+}
+
+.logs-cell-nowrap {
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.logs-cell-mono {
+  font-family: var(--mono);
+  font-size: 0.82rem;
+}
+
+.logs-cell-break {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  max-width: 42ch;
+}
+
+.logs-cell-small {
+  font-size: 0.82rem;
+  color: var(--text);
+}
+
+@media (max-width: 640px) {
+  .logs-table .logs-col-narrow {
+    display: none;
+  }
+
+  .logs-table {
+    min-width: 520px;
+  }
+
+  .logs-cell-break {
+    max-width: 28ch;
+  }
 }
 
 .page-subtitle {

@@ -1,3 +1,4 @@
+export { useAdminLogsQuery } from './useAdminLogsQuery'
 export { useCategoriesQuery } from './useCategoriesQuery'
 export { useCreateCategoryMutation } from './useCreateCategoryMutation'
 export { useCreateExpenseMutation } from './useCreateExpenseMutation'
