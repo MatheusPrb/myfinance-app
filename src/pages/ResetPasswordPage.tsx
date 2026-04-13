@@ -97,12 +97,13 @@ export function ResetPasswordPage() {
       </p>
       {cameFromForgotSend && sendingCode ? (
         <p className="success-banner" role="status">
-          Enviando código para {email || 'seu email'}…
+          Enviando solicitação…
         </p>
       ) : null}
       {cameFromForgotSend && requestCodeMutation.isSuccess && !sendingCode ? (
         <p className="success-banner" role="status">
-          Código enviado. Confira sua caixa de entrada e digite os 6 dígitos abaixo.
+          Se existir uma conta com este email, você receberá um código em breve. Confira a caixa de entrada e o spam.
+          Quando o código chegar, preencha os campos abaixo.
         </p>
       ) : null}
       <form className="auth-form" onSubmit={handleSubmit} noValidate>
