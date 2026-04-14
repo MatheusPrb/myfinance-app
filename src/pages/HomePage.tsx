@@ -1,14 +1,24 @@
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuthToken } from '../hooks/useAuthToken'
 import { useSpendingSummaryQuery } from '../hooks/api'
 import { formatBRL } from '../utils/format'
 import { parseApiError } from '../utils/apiError'
+import { currentMonthRange } from '../utils/dateRange'
+import { HomeCategoryRow } from './home/HomeCategoryRow'
 
 export function HomePage() {
   const token = useAuthToken()
   const hasToken = token !== null
 
-  const summaryQuery = useSpendingSummaryQuery(hasToken)
+  const [range, setRange] = useState(() => currentMonthRange())
+  const [expandedCategoryId, setExpandedCategoryId] = useState<string | null>(null)
+
+  const summaryQuery = useSpendingSummaryQuery(hasToken, range)
+
+  useEffect(() => {
+    setExpandedCategoryId(null)
+  }, [range.date_from, range.date_to])
 
   if (!hasToken) {
     return (
@@ -75,17 +85,54 @@ export function HomePage() {
       <header className="page-header page-header-stack">
         <div>
           <h1>Visão geral</h1>
-          <p className="page-subtitle muted">Resumo dos seus gastos na API.</p>
+          <p className="page-subtitle muted home-dashboard-subtitle">
+            Resumo por categoria no período{' '}
+            <span className="home-dashboard-subtitle-dates">
+              {range.date_from} — {range.date_to}
+            </span>
+            .
+          </p>
         </div>
         <div className="header-actions">
           <Link to="/expenses/new" className="button primary">
             Novo gasto
           </Link>
-          <Link to="/expenses" className="button secondary">
+          <Link
+            to={`/expenses?date_from=${encodeURIComponent(range.date_from)}&date_to=${encodeURIComponent(range.date_to)}`}
+            className="button secondary"
+          >
             Ver todos
           </Link>
         </div>
       </header>
+
+      <div className="home-date-filter">
+        <label className="home-date-field">
+          <span className="home-date-label">De</span>
+          <input
+            type="date"
+            className="input-date"
+            value={range.date_from}
+            onChange={(e) => setRange((r) => ({ ...r, date_from: e.target.value }))}
+          />
+        </label>
+        <label className="home-date-field">
+          <span className="home-date-label">Até</span>
+          <input
+            type="date"
+            className="input-date"
+            value={range.date_to}
+            onChange={(e) => setRange((r) => ({ ...r, date_to: e.target.value }))}
+          />
+        </label>
+        <button
+          type="button"
+          className="button secondary home-date-filter-reset"
+          onClick={() => setRange(currentMonthRange())}
+        >
+          Este mês
+        </button>
+      </div>
 
       {errorMessage ? (
         <p className="form-error" role="alert">
@@ -98,24 +145,31 @@ export function HomePage() {
       ) : summary ? (
         <>
           <div className="summary-hero">
-            <p className="summary-hero-label">Total gasto</p>
+            <p className="summary-hero-label">Total no período</p>
             <p className="summary-hero-value">{formatBRL(summary.total)}</p>
           </div>
 
           {summary.by_category.length > 0 ? (
             <>
               <h2 className="section-title">Por categoria</h2>
-              <ul className="category-chips">
-                {summary.by_category.map((row) => (
-                  <li key={row.category_id} className="category-chip">
-                    <span className="category-chip-name">{row.category_name}</span>
-                    <span className="category-chip-total">{formatBRL(row.total)}</span>
-                  </li>
-                ))}
+              <p className="muted section-hint">Clique em uma categoria para ver descrição e valor de cada gasto.</p>
+              <ul className="category-chips category-chips--stack">
+                {summary.by_category.map((row) => {
+                  const open = expandedCategoryId === row.category_id
+                  return (
+                    <HomeCategoryRow
+                      key={row.category_id}
+                      row={row}
+                      range={range}
+                      open={open}
+                      onToggle={() => setExpandedCategoryId(open ? null : row.category_id)}
+                    />
+                  )
+                })}
               </ul>
             </>
           ) : (
-            <p className="muted empty-hint">Ainda não há gastos. Cadastre um para ver o total por categoria.</p>
+            <p className="muted empty-hint">Nenhum gasto neste período. Ajuste as datas ou cadastre um gasto.</p>
           )}
         </>
       ) : null}
