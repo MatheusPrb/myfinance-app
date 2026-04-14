@@ -20,6 +20,20 @@ export type SpendingSummary = {
   by_category: CategoryTotal[]
 }
 
+/** Resumo GET /expenses/summary/by-subcategory */
+export type SubcategorySummaryRow = {
+  category_id: string
+  category_name: string
+  subcategory_id: string
+  subcategory_name: string
+  total: string
+}
+
+export type SpendingSummaryBySubcategory = {
+  total: string
+  by_subcategory: SubcategorySummaryRow[]
+}
+
 export type ExpenseListMeta = {
   current_page: number
   per_page: number

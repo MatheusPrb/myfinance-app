@@ -21,11 +21,17 @@ export const queryKeys = {
     root: () => [...queryKeys.all, 'expenses'] as const,
     summary: (dateFrom: string, dateTo: string) =>
       [...queryKeys.expenses.root(), 'summary', { dateFrom, dateTo }] as const,
-    /** Mesmos `date_from` / `date_to` do summary; `category_id` opcional (dropdown na home). */
+    summaryBySubcategory: (dateFrom: string, dateTo: string) =>
+      [...queryKeys.expenses.root(), 'summaryBySubcategory', { dateFrom, dateTo }] as const,
     list: (
       page: number,
       perPage: number,
-      filters: { date_from: string; date_to: string; category_id?: string },
+      filters: {
+        date_from: string
+        date_to: string
+        category_id?: string
+        subcategory_id?: string
+      },
     ) =>
       [
         ...queryKeys.expenses.root(),
@@ -36,6 +42,7 @@ export const queryKeys = {
           date_from: filters.date_from,
           date_to: filters.date_to,
           category_id: filters.category_id ?? '',
+          subcategory_id: filters.subcategory_id ?? '',
         },
       ] as const,
     detail: (id: string) => [...queryKeys.expenses.root(), 'detail', id] as const,

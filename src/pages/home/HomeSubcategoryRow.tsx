@@ -1,19 +1,19 @@
 import { Link } from 'react-router-dom'
-import type { CategoryTotal } from '../../api/expenseTypes'
-import { useCategoryExpensesQuery } from '../../hooks/api'
+import type { SubcategorySummaryRow } from '../../api/expenseTypes'
+import { useSubcategoryExpensesQuery } from '../../hooks/api'
 import { formatBRL } from '../../utils/format'
 import { parseApiError } from '../../utils/apiError'
 import type { DateRangeFilter } from '../../hooks/api'
 
 type Props = {
-  row: CategoryTotal
+  row: SubcategorySummaryRow
   range: DateRangeFilter
   open: boolean
   onToggle: () => void
 }
 
-export function HomeCategoryRow({ row, range, open, onToggle }: Props) {
-  const listQuery = useCategoryExpensesQuery(row.category_id, range, open)
+export function HomeSubcategoryRow({ row, range, open, onToggle }: Props) {
+  const listQuery = useSubcategoryExpensesQuery(row, range, open)
   const items = listQuery.data?.items ?? []
   const err = listQuery.isError ? parseApiError(listQuery.error).message : ''
 
@@ -23,9 +23,10 @@ export function HomeCategoryRow({ row, range, open, onToggle }: Props) {
         type="button"
         className="category-chip category-chip-toggle home-category-header"
         aria-expanded={open}
+        aria-label={`${row.subcategory_name}, categoria ${row.category_name}`}
         onClick={onToggle}
       >
-        <span className="category-chip-name home-category-header-label">{row.category_name}</span>
+        <span className="category-chip-name home-category-header-label">{row.subcategory_name}</span>
         <span className="category-chip-total home-category-header-total">{formatBRL(row.total)}</span>
         <span className="category-chip-chevron home-category-chevron" aria-hidden>
           {open ? '▾' : '▸'}
@@ -33,6 +34,9 @@ export function HomeCategoryRow({ row, range, open, onToggle }: Props) {
       </button>
       {open ? (
         <div className="category-panel home-category-panel">
+          <p className="muted home-subcategory-panel-category">
+            Categoria: <strong className="home-subcategory-panel-category-name">{row.category_name}</strong>
+          </p>
           {listQuery.isPending ? (
             <p className="muted category-panel-status">Carregando gastos…</p>
           ) : err ? (
@@ -46,15 +50,12 @@ export function HomeCategoryRow({ row, range, open, onToggle }: Props) {
               <ul className="category-expense-list">
                 {items.map((e) => (
                   <li key={e.id}>
-                    <Link to={`/expenses/${e.id}`} className="category-expense-row home-category-expense-row">
+                    <Link
+                      to={`/expenses/${e.id}`}
+                      className="category-expense-row home-category-expense-row home-subcategory-expense-row"
+                    >
                       <span className="category-expense-desc home-category-expense-desc">
                         {e.description?.trim() || 'Sem descrição'}
-                      </span>
-                      <span
-                        className="category-expense-sub home-category-expense-sub"
-                        title={e.subcategory_name?.trim() ? e.subcategory_name : undefined}
-                      >
-                        {e.subcategory_name?.trim() || '—'}
                       </span>
                       <span className="category-expense-value home-category-expense-value">{formatBRL(e.value)}</span>
                     </Link>

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { FormField } from '../components/FormField'
 import { storeAuthToken } from '../hooks/useAuthToken'
 import { useLoginMutation } from '../hooks/api'
@@ -20,6 +20,7 @@ function emailAfterPasswordReset(state: unknown): string {
 export function LoginPage() {
   const navigate = useNavigate()
   const location = useLocation()
+  const [searchParams] = useSearchParams()
   const queryClient = useQueryClient()
   const loginMutation = useLoginMutation()
 
@@ -29,6 +30,7 @@ export function LoginPage() {
   const passwordJustReset = Boolean(
     location.state && typeof location.state === 'object' && 'passwordReset' in location.state,
   )
+  const sessionExpired = searchParams.get('session') === 'expired'
   const [email, setEmail] = useState(() => emailAfterPasswordReset(location.state))
   const [password, setPassword] = useState('')
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
@@ -85,6 +87,11 @@ export function LoginPage() {
       {passwordJustReset ? (
         <p className="success-banner" role="status">
           Senha alterada. Entre com sua nova senha.
+        </p>
+      ) : null}
+      {sessionExpired ? (
+        <p className="notice-banner" role="status">
+          Sua sessão expirou ou você não está mais autenticado. Entre novamente para continuar.
         </p>
       ) : null}
       <form className="auth-form" onSubmit={handleSubmit} noValidate>

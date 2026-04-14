@@ -1,24 +1,29 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuthToken } from '../hooks/useAuthToken'
-import { useSpendingSummaryQuery } from '../hooks/api'
+import { useSpendingSummaryBySubcategoryQuery, useSpendingSummaryQuery } from '../hooks/api'
 import { formatBRL } from '../utils/format'
 import { parseApiError } from '../utils/apiError'
 import { currentMonthRange } from '../utils/dateRange'
 import { HomeCategoryRow } from './home/HomeCategoryRow'
+import { HomeSubcategoryRow } from './home/HomeSubcategoryRow'
+
+type HomeGroupMode = 'category' | 'subcategory'
 
 export function HomePage() {
   const token = useAuthToken()
   const hasToken = token !== null
 
   const [range, setRange] = useState(() => currentMonthRange())
-  const [expandedCategoryId, setExpandedCategoryId] = useState<string | null>(null)
+  const [groupMode, setGroupMode] = useState<HomeGroupMode>('category')
+  const [expandedKey, setExpandedKey] = useState<string | null>(null)
 
-  const summaryQuery = useSpendingSummaryQuery(hasToken, range)
+  const summaryQuery = useSpendingSummaryQuery(hasToken && groupMode === 'category', range)
+  const subSummaryQuery = useSpendingSummaryBySubcategoryQuery(hasToken && groupMode === 'subcategory', range)
 
   useEffect(() => {
-    setExpandedCategoryId(null)
-  }, [range.date_from, range.date_to])
+    setExpandedKey(null)
+  }, [range.date_from, range.date_to, groupMode])
 
   if (!hasToken) {
     return (
@@ -78,7 +83,12 @@ export function HomePage() {
   }
 
   const summary = summaryQuery.data
-  const errorMessage = summaryQuery.isError ? parseApiError(summaryQuery.error).message : ''
+  const subSummary = subSummaryQuery.data
+  const activePending =
+    groupMode === 'category' ? summaryQuery.isPending : subSummaryQuery.isPending
+  const activeError =
+    groupMode === 'category' ? summaryQuery.error : subSummaryQuery.error
+  const errorMessage = activeError ? parseApiError(activeError).message : ''
 
   return (
     <section className="page home-dashboard">
@@ -86,7 +96,7 @@ export function HomePage() {
         <div>
           <h1>Visão geral</h1>
           <p className="page-subtitle muted home-dashboard-subtitle">
-            Resumo por categoria no período{' '}
+            {groupMode === 'category' ? 'Resumo por categoria' : 'Resumo por subcategoria'} no período{' '}
             <span className="home-dashboard-subtitle-dates">
               {range.date_from} — {range.date_to}
             </span>
@@ -105,6 +115,25 @@ export function HomePage() {
           </Link>
         </div>
       </header>
+
+      <div className="home-group-toggle" role="group" aria-label="Agrupamento do resumo">
+        <button
+          type="button"
+          className={`button secondary home-group-toggle-btn${groupMode === 'category' ? ' home-group-toggle-btn--active' : ''}`}
+          aria-pressed={groupMode === 'category'}
+          onClick={() => setGroupMode('category')}
+        >
+          Por categoria
+        </button>
+        <button
+          type="button"
+          className={`button secondary home-group-toggle-btn${groupMode === 'subcategory' ? ' home-group-toggle-btn--active' : ''}`}
+          aria-pressed={groupMode === 'subcategory'}
+          onClick={() => setGroupMode('subcategory')}
+        >
+          Por subcategoria
+        </button>
+      </div>
 
       <div className="home-date-filter">
         <label className="home-date-field">
@@ -140,9 +169,9 @@ export function HomePage() {
         </p>
       ) : null}
 
-      {summaryQuery.isPending ? (
+      {activePending ? (
         <p className="muted">Carregando resumo…</p>
-      ) : summary ? (
+      ) : groupMode === 'category' && summary ? (
         <>
           <div className="summary-hero">
             <p className="summary-hero-label">Total no período</p>
@@ -152,17 +181,53 @@ export function HomePage() {
           {summary.by_category.length > 0 ? (
             <>
               <h2 className="section-title">Por categoria</h2>
-              <p className="muted section-hint">Clique em uma categoria para ver descrição e valor de cada gasto.</p>
+              <p className="muted section-hint">
+                Clique em uma categoria para ver descrição, subcategoria e valor de cada gasto.
+              </p>
               <ul className="category-chips category-chips--stack">
                 {summary.by_category.map((row) => {
-                  const open = expandedCategoryId === row.category_id
+                  const key = `c:${row.category_id}`
+                  const open = expandedKey === key
                   return (
                     <HomeCategoryRow
                       key={row.category_id}
                       row={row}
                       range={range}
                       open={open}
-                      onToggle={() => setExpandedCategoryId(open ? null : row.category_id)}
+                      onToggle={() => setExpandedKey(open ? null : key)}
+                    />
+                  )
+                })}
+              </ul>
+            </>
+          ) : (
+            <p className="muted empty-hint">Nenhum gasto neste período. Ajuste as datas ou cadastre um gasto.</p>
+          )}
+        </>
+      ) : groupMode === 'subcategory' && subSummary ? (
+        <>
+          <div className="summary-hero">
+            <p className="summary-hero-label">Total no período</p>
+            <p className="summary-hero-value">{formatBRL(subSummary.total)}</p>
+          </div>
+
+          {subSummary.by_subcategory.length > 0 ? (
+            <>
+              <h2 className="section-title">Por subcategoria</h2>
+              <p className="muted section-hint">
+                Só aparecem gastos com subcategoria. Clique na linha para expandir e ver descrição e valor de cada um.
+              </p>
+              <ul className="category-chips category-chips--stack">
+                {subSummary.by_subcategory.map((row) => {
+                  const key = `s:${row.subcategory_id}`
+                  const open = expandedKey === key
+                  return (
+                    <HomeSubcategoryRow
+                      key={key}
+                      row={row}
+                      range={range}
+                      open={open}
+                      onToggle={() => setExpandedKey(open ? null : key)}
                     />
                   )
                 })}
