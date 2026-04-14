@@ -1,6 +1,5 @@
 services:
-  - type: web
+  - type: static
     name: myfinance-app
-    runtime: node
     buildCommand: npm ci && npm run build
-    startCommand: npm start
+    staticPublishPath: dist
