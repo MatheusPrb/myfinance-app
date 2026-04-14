@@ -50,6 +50,12 @@ export function HomeCategoryRow({ row, range, open, onToggle }: Props) {
                       <span className="category-expense-desc home-category-expense-desc">
                         {e.description?.trim() || 'Sem descrição'}
                       </span>
+                      <span
+                        className="category-expense-sub home-category-expense-sub"
+                        title={e.subcategory_name?.trim() ? e.subcategory_name : undefined}
+                      >
+                        {e.subcategory_name?.trim() || '—'}
+                      </span>
                       <span className="category-expense-value home-category-expense-value">{formatBRL(e.value)}</span>
                     </Link>
                   </li>

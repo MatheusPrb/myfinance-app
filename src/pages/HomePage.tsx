@@ -152,7 +152,9 @@ export function HomePage() {
           {summary.by_category.length > 0 ? (
             <>
               <h2 className="section-title">Por categoria</h2>
-              <p className="muted section-hint">Clique em uma categoria para ver descrição e valor de cada gasto.</p>
+              <p className="muted section-hint">
+                Clique em uma categoria para ver descrição, subcategoria e valor de cada gasto.
+              </p>
               <ul className="category-chips category-chips--stack">
                 {summary.by_category.map((row) => {
                   const open = expandedCategoryId === row.category_id
