@@ -19,9 +19,25 @@ export const queryKeys = {
 
   expenses: {
     root: () => [...queryKeys.all, 'expenses'] as const,
-    summary: () => [...queryKeys.expenses.root(), 'summary'] as const,
-    list: (page: number, perPage: number) =>
-      [...queryKeys.expenses.root(), 'list', { page, perPage }] as const,
+    summary: (dateFrom: string, dateTo: string) =>
+      [...queryKeys.expenses.root(), 'summary', { dateFrom, dateTo }] as const,
+    /** Mesmos `date_from` / `date_to` do summary; `category_id` opcional (dropdown na home). */
+    list: (
+      page: number,
+      perPage: number,
+      filters: { date_from: string; date_to: string; category_id?: string },
+    ) =>
+      [
+        ...queryKeys.expenses.root(),
+        'list',
+        {
+          page,
+          perPage,
+          date_from: filters.date_from,
+          date_to: filters.date_to,
+          category_id: filters.category_id ?? '',
+        },
+      ] as const,
     detail: (id: string) => [...queryKeys.expenses.root(), 'detail', id] as const,
     /** Query desabilitada (sem id válido) — chave estável, sem fetch */
     detailNone: () => [...queryKeys.expenses.root(), 'detail', '__none__'] as const,

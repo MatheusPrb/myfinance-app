@@ -1,14 +1,45 @@
-import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useEffect, useMemo, useState } from 'react'
+import { Link, useSearchParams } from 'react-router-dom'
 import { useExpensesQuery } from '../hooks/api'
+import type { DateRangeFilter } from '../hooks/api'
 import { formatBRL, formatDateTime } from '../utils/format'
 import { parseApiError } from '../utils/apiError'
+import { currentMonthRange, normalizeDateRange } from '../utils/dateRange'
 
 const PER_PAGE = 15
 
 export function ExpensesPage() {
+  const [searchParams, setSearchParams] = useSearchParams()
   const [page, setPage] = useState(1)
-  const listQuery = useExpensesQuery(page, PER_PAGE)
+
+  const range = useMemo((): DateRangeFilter => {
+    const from = searchParams.get('date_from')?.trim() ?? ''
+    const to = searchParams.get('date_to')?.trim() ?? ''
+    if (from && to) return normalizeDateRange(from, to)
+    return currentMonthRange()
+  }, [searchParams])
+
+  useEffect(() => {
+    const from = searchParams.get('date_from')?.trim() ?? ''
+    const to = searchParams.get('date_to')?.trim() ?? ''
+    if (from && to) return
+    const d = currentMonthRange()
+    setSearchParams(
+      (prev) => {
+        const next = new URLSearchParams(prev)
+        next.set('date_from', d.date_from)
+        next.set('date_to', d.date_to)
+        return next
+      },
+      { replace: true },
+    )
+  }, [searchParams, setSearchParams])
+
+  useEffect(() => {
+    setPage(1)
+  }, [range.date_from, range.date_to])
+
+  const listQuery = useExpensesQuery(page, PER_PAGE, range)
 
   const data = listQuery.data
   const items = data?.items ?? []
@@ -29,7 +60,9 @@ export function ExpensesPage() {
         <div>
           <h1>Gastos</h1>
           <p className="page-subtitle muted">
-            {total === 0 && !loading ? 'Nenhum registro ainda.' : `${total} registro${total === 1 ? '' : 's'}`}
+            {total === 0 && !loading
+              ? 'Nenhum registro neste período.'
+              : `${total} registro${total === 1 ? '' : 's'} · ${range.date_from} — ${range.date_to}`}
           </p>
         </div>
         <Link to="/expenses/new" className="button primary">

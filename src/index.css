@@ -1266,6 +1266,79 @@ a.link-back:hover,
   word-break: break-word;
 }
 
+.home-dashboard-subtitle {
+  max-width: 100%;
+}
+
+.home-dashboard-subtitle-dates {
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.home-date-filter {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+  margin-bottom: clamp(18px, 3vw, 24px);
+  padding: clamp(14px, 3vw, 18px);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--social-bg);
+}
+
+@media (min-width: 560px) {
+  .home-date-filter {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+    align-items: end;
+    column-gap: 16px;
+    row-gap: 12px;
+  }
+}
+
+.home-date-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.home-date-label {
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.home-date-filter .input-date {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  min-height: var(--touch-min);
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text-h);
+  font: inherit;
+  font-size: 16px;
+  line-height: 1.2;
+}
+
+.home-date-filter-reset {
+  width: 100%;
+}
+
+@media (min-width: 560px) {
+  .home-date-filter-reset {
+    width: auto;
+    min-width: 7.5rem;
+  }
+}
+
+.section-hint {
+  margin: -4px 0 14px;
+  font-size: 0.9rem;
+}
+
 .category-chips {
   list-style: none;
   padding: 0;
@@ -1273,6 +1346,218 @@ a.link-back:hover,
   display: grid;
   grid-template-columns: 1fr;
   gap: 10px;
+}
+
+.category-chips--stack {
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+.category-block {
+  min-width: 0;
+}
+
+.category-block--open .category-chip-toggle {
+  border-color: var(--accent-border);
+  background: var(--accent-bg);
+}
+
+.category-chip-toggle {
+  width: 100%;
+  margin: 0;
+  cursor: pointer;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.category-chip-chevron {
+  flex-shrink: 0;
+  width: 1.25rem;
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.category-panel {
+  margin-top: 8px;
+  padding: 0 4px 4px;
+}
+
+.category-panel-status {
+  margin: 8px 4px 4px;
+  font-size: 0.9rem;
+}
+
+.category-panel-foot {
+  margin: 10px 4px 4px;
+  font-size: 0.85rem;
+}
+
+.category-panel-foot a {
+  color: var(--accent);
+}
+
+.category-expense-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.category-expense-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  text-decoration: none;
+  color: inherit;
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease;
+}
+
+.category-expense-row:hover {
+  border-color: var(--accent-border);
+  background: var(--accent-bg);
+}
+
+.category-expense-desc {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-size: 0.92rem;
+  color: var(--text-h);
+}
+
+.category-expense-value {
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+/* Home — categorias: layout sóbrio + coluna fixa alinha valores entre cards */
+.category-chips--stack .home-category-block {
+  --home-money-col: 11rem;
+
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  box-shadow: none;
+  overflow: hidden;
+}
+
+.category-chips--stack .home-category-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) var(--home-money-col) 1.35rem;
+  align-items: center;
+  gap: 0 10px;
+  padding: 12px 14px;
+  min-height: var(--touch-min);
+  border: none;
+  border-radius: 0;
+  background: var(--social-bg);
+  text-align: left;
+}
+
+.category-chips--stack .home-category-header-label {
+  min-width: 0;
+  padding-left: 0;
+  font-size: 0.98rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--text-h);
+}
+
+.category-chips--stack .home-category-header-total {
+  font-size: 0.92rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-h);
+  justify-self: stretch;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.category-chips--stack .home-category-chevron {
+  justify-self: end;
+  width: 1.25rem;
+  text-align: center;
+  font-size: 0.68rem;
+  color: var(--text);
+  opacity: 0.45;
+}
+
+.category-chips--stack .category-block--open .home-category-header {
+  border-bottom: 1px solid var(--border);
+  background: var(--social-bg);
+}
+
+.category-chips--stack .home-category-panel {
+  margin-top: 0;
+  padding: 10px 12px 12px 14px;
+  background: var(--bg);
+  border-top: 1px solid var(--border);
+}
+
+.category-chips--stack .home-category-panel .category-panel-status,
+.category-chips--stack .home-category-panel .category-panel-foot {
+  margin-left: 0;
+}
+
+.category-chips--stack .home-category-panel .category-expense-list {
+  gap: 6px;
+}
+
+.category-chips--stack .home-category-expense-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) var(--home-money-col);
+  align-items: center;
+  gap: 0 10px;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 10px;
+  background: transparent;
+  border-left: none;
+  box-shadow: none;
+}
+
+.category-chips--stack .home-category-expense-row:hover {
+  background: var(--social-bg);
+}
+
+.category-chips--stack .home-category-expense-desc {
+  font-size: 0.86rem;
+  font-weight: 400;
+  color: var(--text);
+  min-width: 0;
+}
+
+.category-chips--stack .home-category-expense-value {
+  font-size: 0.86rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-h);
+  text-align: right;
+  justify-self: stretch;
+  white-space: nowrap;
+}
+
+@media (max-width: 380px) {
+  .category-chips--stack .home-category-block {
+    --home-money-col: min(9.25rem, 32vw);
+  }
 }
 
 @media (min-width: 560px) {
@@ -1285,6 +1570,19 @@ a.link-back:hover,
 @media (min-width: 900px) {
   .category-chips {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* Home: acordeão por categoria — sempre uma coluna */
+@media (min-width: 560px) {
+  .category-chips.category-chips--stack {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (min-width: 900px) {
+  .category-chips.category-chips--stack {
+    grid-template-columns: 1fr;
   }
 }
 

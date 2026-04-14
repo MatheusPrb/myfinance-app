@@ -6,16 +6,45 @@ import type {
   ExpenseListPayload,
   SpendingSummary,
 } from '../api/expenseTypes'
+import { normalizeDateRange } from '../utils/dateRange'
 
-export async function fetchSpendingSummary(): Promise<SpendingSummary> {
-  const { data } = await api.get<ApiSuccess<SpendingSummary>>('/expenses/summary')
+export type ExpenseListFilters = {
+  category_id?: string
+  date_from?: string
+  date_to?: string
+}
+
+export async function fetchSpendingSummary(range: {
+  date_from: string
+  date_to: string
+}): Promise<SpendingSummary> {
+  const { date_from, date_to } = normalizeDateRange(range.date_from, range.date_to)
+  const { data } = await api.get<ApiSuccess<SpendingSummary>>('/expenses/summary', {
+    params: { date_from, date_to },
+  })
   return data.data
 }
 
-export async function fetchExpenses(page = 1, perPage = 15): Promise<ExpenseListPayload> {
-  const { data } = await api.get<ApiSuccess<ExpenseListPayload>>('/expenses', {
-    params: { page, per_page: perPage },
-  })
+/**
+ * GET /api/v1/expenses
+ * Query: `page`, `per_page`, `date_from`, `date_to` (mesmo formato do summary), opcional `category_id`.
+ */
+export async function fetchExpenses(
+  page = 1,
+  perPage = 15,
+  filters?: ExpenseListFilters,
+): Promise<ExpenseListPayload> {
+  const { date_from, date_to } =
+    filters?.date_from && filters?.date_to
+      ? normalizeDateRange(filters.date_from, filters.date_to)
+      : { date_from: filters?.date_from, date_to: filters?.date_to }
+
+  const params: Record<string, string | number> = { page, per_page: perPage }
+  if (filters?.category_id) params.category_id = filters.category_id
+  if (date_from) params.date_from = date_from
+  if (date_to) params.date_to = date_to
+
+  const { data } = await api.get<ApiSuccess<ExpenseListPayload>>('/expenses', { params })
   return data.data
 }
 
