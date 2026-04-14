@@ -3,3 +3,4 @@ services:
     name: myfinance-app
     buildCommand: npm ci && npm run build
     staticPublishPath: dist
+    startCommand: npm start
