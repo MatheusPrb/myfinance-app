@@ -8,7 +8,12 @@ const STALE_MS = 30_000
 export function useExpensesQuery(page: number, perPage: number, range: DateRangeFilter) {
   const { date_from, date_to } = range
   return useQuery({
-    queryKey: queryKeys.expenses.list(page, perPage, { date_from, date_to }),
+    queryKey: queryKeys.expenses.list(page, perPage, {
+      date_from,
+      date_to,
+      category_id: '',
+      subcategory_id: '',
+    }),
     queryFn: () => fetchExpenses(page, perPage, { date_from, date_to }),
     staleTime: STALE_MS,
   })
