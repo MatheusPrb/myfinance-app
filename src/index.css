@@ -1467,7 +1467,8 @@ a.link-back:hover,
 
 .category-expense-desc {
   min-width: 0;
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
+  word-break: normal;
   font-size: 0.92rem;
   color: var(--text-h);
 }
@@ -1493,7 +1494,8 @@ a.link-back:hover,
 
 /* Home — categorias: layout sóbrio + coluna fixa alinha valores entre cards */
 .category-chips--stack .home-category-block {
-  --home-money-col: 11rem;
+  /* Largura fixa grande (ex.: 11rem) esmagava a descrição em telas ~390px+ */
+  --home-money-col: clamp(6.25rem, 32vw, 11rem);
 
   border-radius: 10px;
   border: 1px solid var(--border);
@@ -1622,7 +1624,7 @@ a.link-back:hover,
 
 @media (max-width: 380px) {
   .category-chips--stack .home-category-block {
-    --home-money-col: min(9.25rem, 32vw);
+    --home-money-col: clamp(5.75rem, 36vw, 9.25rem);
   }
 }
 
