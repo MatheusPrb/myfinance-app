@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { useExpensesQuery } from '../hooks/api'
 import type { DateRangeFilter } from '../hooks/api'
-import { formatBRL, formatDateTime } from '../utils/format'
+import { formatBRL, formatDateTime, formatIsoDateBr } from '../utils/format'
 import { parseApiError } from '../utils/apiError'
 import { currentMonthRange, normalizeDateRange } from '../utils/dateRange'
 
@@ -62,7 +62,7 @@ export function ExpensesPage() {
           <p className="page-subtitle muted">
             {total === 0 && !loading
               ? 'Nenhum registro neste período.'
-              : `${total} registro${total === 1 ? '' : 's'} · ${range.date_from} — ${range.date_to}`}
+              : `${total} registro${total === 1 ? '' : 's'} · de ${formatIsoDateBr(range.date_from)} a ${formatIsoDateBr(range.date_to)}`}
           </p>
         </div>
         <Link to="/expenses/new" className="button primary">

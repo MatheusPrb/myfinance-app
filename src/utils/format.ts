@@ -11,3 +11,10 @@ export function formatDateTime(iso: string | null | undefined): string {
   if (Number.isNaN(d.getTime())) return '—'
   return d.toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })
 }
+
+export function formatIsoDateBr(isoDate: string): string {
+  const s = isoDate.trim()
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s)
+  if (!m) return s
+  return `${m[3]}/${m[2]}/${m[1]}`
+}
