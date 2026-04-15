@@ -1568,8 +1568,8 @@ a.link-back:hover,
 
 .category-chips--stack .home-category-expense-row {
   display: grid;
-  /* Descrição + faixa flexível no meio (subcategoria centralizada) + valor */
-  grid-template-columns: minmax(0, 3fr) minmax(5.25rem, 2fr) var(--home-money-col);
+  /* 1fr | auto | 1fr: coluna do meio fica no centro geométrico (mobile e desktop) */
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   align-items: center;
   gap: 0 12px;
   border: none;
@@ -1593,8 +1593,7 @@ a.link-back:hover,
 
 .category-chips--stack .home-category-expense-sub {
   justify-self: center;
-  width: 100%;
-  max-width: 100%;
+  max-width: min(42vw, 12rem);
   font-size: 0.8rem;
   font-weight: 500;
   color: var(--text);
@@ -1607,7 +1606,8 @@ a.link-back:hover,
   font-variant-numeric: tabular-nums;
   color: var(--text-h);
   text-align: right;
-  justify-self: stretch;
+  justify-self: end;
+  min-width: 0;
   white-space: nowrap;
 }
 
