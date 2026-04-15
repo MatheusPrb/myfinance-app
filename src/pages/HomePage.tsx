@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuthToken } from '../hooks/useAuthToken'
 import { useSpendingSummaryBySubcategoryQuery, useSpendingSummaryQuery } from '../hooks/api'
-import { formatBRL } from '../utils/format'
+import { formatBRL, formatIsoDateBr } from '../utils/format'
 import { parseApiError } from '../utils/apiError'
 import { currentMonthRange } from '../utils/dateRange'
 import { HomeCategoryRow } from './home/HomeCategoryRow'
@@ -96,9 +96,9 @@ export function HomePage() {
         <div>
           <h1>Visão geral</h1>
           <p className="page-subtitle muted home-dashboard-subtitle">
-            {groupMode === 'category' ? 'Resumo por categoria' : 'Resumo por subcategoria'} no período{' '}
+            {groupMode === 'category' ? 'Resumo por categoria' : 'Resumo por subcategoria'} de{' '}
             <span className="home-dashboard-subtitle-dates">
-              {range.date_from} — {range.date_to}
+              {formatIsoDateBr(range.date_from)} a {formatIsoDateBr(range.date_to)}
             </span>
             .
           </p>
